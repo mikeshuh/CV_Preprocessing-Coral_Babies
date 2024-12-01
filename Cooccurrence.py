@@ -74,11 +74,20 @@ def cooccurrence_segmentation(image):
 
 def main():
     for i in range (1, 7):
-        image = cv.imread(f"GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
+        image = cv.imread(f"Coral/GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
 
         cooccurrence_image = cooccurrence_segmentation(image)
 
-        cv.imwrite(f"CooccurrenceOutput/cooccurrence{i}.JPG", cooccurrence_image)
+        cv.imwrite(f"Coral/CooccurrenceOutput/cooccurrence{i}.JPG", cooccurrence_image)
+        print("partOne")
+
+    for i in range (1, 3):
+        image = cv.imread(f"Geology/GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
+
+        cooccurrence_image = cooccurrence_segmentation(image)
+
+        cv.imwrite(f"Geology/CooccurrenceOutput/cooccurrence{i}.JPG", cooccurrence_image)
+
     
 if __name__ == "__main__":
     main()

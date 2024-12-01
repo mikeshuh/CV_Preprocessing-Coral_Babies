@@ -17,11 +17,18 @@ def laplace(gray_image, ksize=5):
 
 def main():
     for i in range (1, 7):
-        image = cv.imread(f"GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
+        image = cv.imread(f"Coral/GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
 
         laplace_image = laplace(image)
 
-        cv.imwrite(f"LaplaceOutput/laplace{i}.JPG", laplace_image)
+        cv.imwrite(f"Coral/LaplaceOutput/laplace{i}.JPG", laplace_image)
+
+    for i in range (1, 3):
+        image = cv.imread(f"Geology/GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
+
+        laplace_image = laplace(image)
+
+        cv.imwrite(f"Geology/LaplaceOutput/laplace{i}.JPG", laplace_image)
     
 if __name__ == "__main__":
     main()

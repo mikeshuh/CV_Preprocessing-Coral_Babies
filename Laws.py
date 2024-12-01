@@ -60,9 +60,15 @@ def laws_texture_segmentation(image, num_segments=3):
 
 def main():
     for i in range(1, 7):
-        image = cv.imread(f"CoralBabies/{i}.JPG", cv.IMREAD_GRAYSCALE)
+        image = cv.imread(f"Coral/CoralBabies/{i}.JPG", cv.IMREAD_GRAYSCALE)
         laws_segmented_image = laws_texture_segmentation(image)
-        cv.imwrite(f"LawsOutput/laws{i}.JPG", laws_segmented_image)
+        cv.imwrite(f"Coral/LawsOutput/laws{i}.JPG", laws_segmented_image)
+        print("partOne")
+    for i in range(1, 3):
+        image = cv.imread(f"Geology/GeologyImages/{i}.JPG", cv.IMREAD_GRAYSCALE)
+        laws_segmented_image = laws_texture_segmentation(image)
+        cv.imwrite(f"Geology/LawsOutput/laws{i}.JPG", laws_segmented_image)
+        print("two")
     
 if __name__ == "__main__":
     main()

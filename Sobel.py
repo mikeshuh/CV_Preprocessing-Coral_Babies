@@ -9,11 +9,18 @@ def sobel(image, kernel_size=3):
 
 def main():
     for i in range (1, 7):
-        image = cv.imread(f"GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
+        image = cv.imread(f"Coral/GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
 
         sobel_image = sobel(image)
 
-        cv.imwrite(f"SobelOutput/sobel{i}.JPG", sobel_image)
+        cv.imwrite(f"Coral/SobelOutput/sobel{i}.JPG", sobel_image)
     
+    for i in range (1, 3):
+            image = cv.imread(f"Geology/GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
+
+            sobel_image = sobel(image)
+
+            cv.imwrite(f"Geology/SobelOutput/sobel{i}.JPG", sobel_image)
+
 if __name__ == "__main__":
     main()
