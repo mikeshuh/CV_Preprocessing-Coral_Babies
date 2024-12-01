@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 from sklearn.cluster import KMeans
-import matplotlib.pyplot as plt
 
 def create_laws_kernels():
     # Define 1D masks
@@ -19,21 +18,32 @@ def create_laws_kernels():
             kernels.append(np.outer(i, j))  # Outer product to create 2D kernel
     return kernels
 
-def laws_texture_energy(image, kernels):
+def laws_texture_segmentation(image, num_segments=3):
+    # Generate Laws' kernels
+    kernels = create_laws_kernels()
+    
+    # Compute texture energy
     energy_maps = []
     for kernel in kernels:
         filtered = cv2.filter2D(image, -1, kernel)  # Convolve with the kernel
         energy = cv2.GaussianBlur(filtered**2, (5, 5), 0)  # Smooth squared result
         energy_maps.append(energy)
-    return energy_maps
-
-def segment_texture(energy_maps, num_segments=3):
+    
     # Stack energy maps into a single feature vector
     feature_vector = np.stack([e.flatten() for e in energy_maps], axis=1)
-    # K-Means clustering
+    
+    # Perform K-Means clustering
     kmeans = KMeans(n_clusters=num_segments, random_state=0).fit(feature_vector)
-    segmented = kmeans.labels_.reshape(energy_maps[0].shape)
-    return segmented
+    labels = kmeans.labels_.reshape(image.shape)
+    
+    # Create a color-mapped segmentation image
+    segmented_image = np.zeros((image.shape[0], image.shape[1], 3), dtype=np.uint8)
+    colors = np.random.randint(0, 255, size=(num_segments, 3))  # Random colors for each segment
+    
+    for segment in range(num_segments):
+        segmented_image[labels == segment] = colors[segment]
+    
+    return segmented_image
 
 # Load grayscale image
 image = cv2.imread('image.jpg', cv2.IMREAD_GRAYSCALE)
@@ -41,19 +51,13 @@ image = cv2.imread('image.jpg', cv2.IMREAD_GRAYSCALE)
 # Normalize the image
 image = image.astype(np.float32) / 255.0
 
-# Generate Laws' kernels and compute texture energy
-kernels = create_laws_kernels()
-energy_maps = laws_texture_energy(image, kernels)
+# Apply Laws' texture segmentation
+segmented_image = laws_texture_segmentation(image, num_segments=4)
 
-# Perform segmentation
-segmented_image = segment_texture(energy_maps, num_segments=4)
+# Save or display the result
+cv2.imshow('Segmented Image', segmented_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
-# Display results
-plt.figure(figsize=(10, 5))
-plt.subplot(1, 2, 1)
-plt.title('Original Image')
-plt.imshow(image, cmap='gray')
-plt.subplot(1, 2, 2)
-plt.title('Segmented Image')
-plt.imshow(segmented_image, cmap='jet')
-plt.show()
+# Alternatively, save the segmented image
+cv2.imwrite('segmented_image.jpg', segmented_image)

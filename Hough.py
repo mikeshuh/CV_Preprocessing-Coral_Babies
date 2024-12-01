@@ -1,45 +1,30 @@
 import cv2 as cv
 import numpy as np
 
-# Apply Hough Transform to detect lines in an edge-detected image
-# https://docs.opencv.org/3.4/d9/db0/tutorial_hough_lines.html 
-def hough_lines(edge_image, rho=1, theta=np.pi / 180, threshold=100):
-    # Detect lines using Hough Line Transform
-    lines = cv.HoughLines(edge_image, rho, theta, threshold)
-    
-    # Create an image to draw the lines on
-    line_image = np.copy(edge_image) * 0  # Create a black image with the same dimensions
-    
-    if lines is not None:
-        for line in lines:
-            rho, theta = line[0]
-            a = np.cos(theta)
-            b = np.sin(theta)
-            x0 = a * rho
-            y0 = b * rho
-            x1 = int(x0 + 1000 * (-b))
-            y1 = int(y0 + 1000 * (a))
-            x2 = int(x0 - 1000 * (-b))
-            y2 = int(y0 - 1000 * (a))
-            cv.line(line_image, (x1, y1), (x2, y2), (255, 255, 255), 2)
-    
-    return line_image
-
 # Apply Hough Transform to detect circles in an edge-detected image
 # https://docs.opencv.org/4.x/da/d53/tutorial_py_houghcircles.html
-def hough_circles(edge_image, dp=1.2, min_dist=20, param1=50, param2=30, min_radius=0, max_radius=0):
+def hough_circles(edge_image, overlay_image, dp=2, min_dist=150, param1=50, param2=30, min_radius=25, max_radius=75):
     # Detect circles using Hough Circle Transform
     circles = cv.HoughCircles(edge_image, cv.HOUGH_GRADIENT, dp, min_dist, param1=param1, param2=param2, minRadius=min_radius, maxRadius=max_radius)
-    
-    # Create an image to draw the circles on
-    circle_image = np.copy(edge_image) * 0  # Create a black image with the same dimensions
     
     if circles is not None:
         circles = np.uint16(np.around(circles))
         for i in circles[0, :]:
             # Draw the circle outline
-            cv.circle(circle_image, (i[0], i[1]), i[2], (255, 255, 255), 2)
+            cv.circle(overlay_image, (i[0], i[1]), i[2], (0, 255, 0), 2)
             # Draw the circle center
-            cv.circle(circle_image, (i[0], i[1]), 2, (255, 255, 255), 3)
+            cv.circle(overlay_image, (i[0], i[1]), 2, (0, 0, 255), 3)
     
-    return circle_image
+    return overlay_image
+
+def main():
+    for i in range (1, 7):
+        image = cv.imread(f"CoralBabies/{i}.JPG")
+        edge_image = cv.imread(f"LaplaceOutput/laplace{i}.JPG", cv.IMREAD_GRAYSCALE)
+
+        hough_circles_image = hough_circles(edge_image, image)
+
+        cv.imwrite(f"HoughOutput/hough{i}.JPG", hough_circles_image)
+    
+if __name__ == "__main__":
+    main()
