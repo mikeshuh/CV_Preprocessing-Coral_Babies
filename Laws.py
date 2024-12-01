@@ -1,4 +1,4 @@
-import cv2
+import cv2 as cv
 import numpy as np
 from sklearn.cluster import KMeans
 
@@ -25,39 +25,44 @@ def laws_texture_segmentation(image, num_segments=3):
     # Compute texture energy
     energy_maps = []
     for kernel in kernels:
-        filtered = cv2.filter2D(image, -1, kernel)  # Convolve with the kernel
-        energy = cv2.GaussianBlur(filtered**2, (5, 5), 0)  # Smooth squared result
+        filtered = cv.filter2D(image, -1, kernel)  # Convolve with the kernel
+        energy = cv.GaussianBlur(filtered**2, (5, 5), 0)  # Smooth squared result
         energy_maps.append(energy)
     
     # Stack energy maps into a single feature vector
     feature_vector = np.stack([e.flatten() for e in energy_maps], axis=1)
     
-    # Perform K-Means clustering
-    kmeans = KMeans(n_clusters=num_segments, random_state=0).fit(feature_vector)
+    # Perform K-Means clustering with k-means++ initialization
+    kmeans = KMeans(n_clusters=num_segments, init='k-means++', random_state=0).fit(feature_vector)
     labels = kmeans.labels_.reshape(image.shape)
     
     # Create a color-mapped segmentation image
     segmented_image = np.zeros((image.shape[0], image.shape[1], 3), dtype=np.uint8)
-    colors = np.random.randint(0, 255, size=(num_segments, 3))  # Random colors for each segment
+    
+    # Define colors for segments
+    colors_list = [
+        [255, 0, 0],   # Red
+        [0, 255, 0],   # Green
+        [0, 0, 255],   # Blue
+        # Add more colors if needed
+    ]
+    
+    if num_segments <= len(colors_list):
+        colors = np.array(colors_list[:num_segments])
+    else:
+        # If num_segments is greater than colors_list length, generate random colors
+        colors = np.random.randint(0, 255, size=(num_segments, 3))
     
     for segment in range(num_segments):
         segmented_image[labels == segment] = colors[segment]
     
     return segmented_image
 
-# Load grayscale image
-image = cv2.imread('image.jpg', cv2.IMREAD_GRAYSCALE)
-
-# Normalize the image
-image = image.astype(np.float32) / 255.0
-
-# Apply Laws' texture segmentation
-segmented_image = laws_texture_segmentation(image, num_segments=4)
-
-# Save or display the result
-cv2.imshow('Segmented Image', segmented_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-# Alternatively, save the segmented image
-cv2.imwrite('segmented_image.jpg', segmented_image)
+def main():
+    for i in range(1, 7):
+        image = cv.imread(f"CoralBabies/{i}.JPG", cv.IMREAD_GRAYSCALE)
+        laws_segmented_image = laws_texture_segmentation(image)
+        cv.imwrite(f"LawsOutput/laws{i}.JPG", laws_segmented_image)
+    
+if __name__ == "__main__":
+    main()
