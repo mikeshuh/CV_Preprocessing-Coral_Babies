@@ -2,7 +2,8 @@ import cv2 as cv
 
 #Turnes the input image into graycale and applies canny dection with hysteresis parameters
 def canny(image, candidateEdge=10, confirmedEdge=18):
-    return cv.Canny(image, candidateEdge, confirmedEdge)
+    canny = cv.Canny(image, candidateEdge, confirmedEdge)
+    return cv.convertScaleAbs(canny)
 
 def main():
     for i in range (1, 7):

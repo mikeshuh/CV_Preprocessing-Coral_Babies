@@ -4,7 +4,8 @@ import cv2 as cv
 def sobel(image, kernel_size=3):
     sobel_x = cv.Sobel(image, cv.CV_64F, 1, 0, ksize=kernel_size)
     sobel_y = cv.Sobel(image, cv.CV_64F, 0, 1, ksize=kernel_size)
-    return cv.magnitude(sobel_x, sobel_y)
+    magnitude = cv.magnitude(sobel_x, sobel_y)
+    return cv.convertScaleAbs(magnitude)
 
 def main():
     for i in range (1, 7):

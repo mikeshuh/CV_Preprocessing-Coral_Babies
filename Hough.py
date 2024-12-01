@@ -20,7 +20,7 @@ def hough_circles(edge_image, overlay_image, dp=2, min_dist=150, param1=50, para
 def main():
     for i in range (1, 7):
         image = cv.imread(f"CoralBabies/{i}.JPG")
-        edge_image = cv.imread(f"LaplaceOutput/laplace{i}.JPG", cv.IMREAD_GRAYSCALE)
+        edge_image = cv.imread(f"SobelOutput/sobel{i}.JPG", cv.IMREAD_GRAYSCALE)
 
         hough_circles_image = hough_circles(edge_image, image)
 
