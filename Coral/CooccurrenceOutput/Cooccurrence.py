@@ -90,6 +90,5 @@ def main():
 
         cv.imwrite(f"Geology/CooccurrenceOutput/cooccurrence{i}.JPG", cooccurrence_image)
 
-    
 if __name__ == "__main__":
     main()

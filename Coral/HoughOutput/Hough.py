@@ -26,7 +26,5 @@ def main():
 
         cv.imwrite(f"Coral/HoughOutput/hough{i}.JPG", hough_circles_image)
 
-
-    
 if __name__ == "__main__":
     main()
