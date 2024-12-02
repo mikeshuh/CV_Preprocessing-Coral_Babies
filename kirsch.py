@@ -17,9 +17,11 @@ def kirsch_compass_operator(image):
 
     
     # Takes each operator and convolves it against the gray scale image
+    #https://www.geeksforgeeks.org/python-opencv-filter2d-function/
     responses = [cv.filter2D(image, cv.CV_64F, operator) for operator in masks]
 
     #For each pixel it will take the maximum accross filters
+    #https://realpython.com/numpy-max-maximum/
     max_response = np.max(responses, axis=0)  
     
     return max_response
