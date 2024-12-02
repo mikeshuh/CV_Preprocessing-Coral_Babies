@@ -20,17 +20,17 @@ def cooccurrence_segmentation(image):
     height, width = image.shape  # Height and width of image
     
     
-    for row in range(0, height, neighborhood_size):     #Iterate through dictionary
+    for row in range(0, height, neighborhood_size):     #Iterate through neighborhoods
         for column in range(0, width, neighborhood_size):
             dictionary = {"00": 0, "01": 0, "02": 0, "03": 0,  #Cooccurrence Dictionary 
                           "10": 0, "11": 0, "12": 0, "13": 0,
                           "20": 0, "21": 0, "22": 0, "23": 0,
                           "30": 0, "31": 0, "32": 0, "33": 0}
             
-            count=0
-            for neighborhoodRow in range(0, neighborhood_size):    
+            count=0 #Averaging number
+            for neighborhoodRow in range(0, neighborhood_size):     #Iterate through neighborhood
                 for neighborhoodColumn in range(0, neighborhood_size):
-                    if (row+neighborhoodRow+1)<height and (column+neighborhoodColumn+1)<width:
+                    if (row+neighborhoodRow+1)<height and (column+neighborhoodColumn+1)<width:  #bounding check
                         temp = str(int(normalized_image[row+neighborhoodRow][column+neighborhoodColumn])) + str(int(normalized_image[row+neighborhoodRow+1][column+neighborhoodColumn+1]))
                         dictionary[temp] += 1
                         count+=1
@@ -40,9 +40,9 @@ def cooccurrence_segmentation(image):
                     dictionary[key]/=count
             dictionary_list.append(dictionary)
                
-    feature_vectors = [np.array(list(dictionary.values())) for dictionary in dictionary_list]  #Convert to array of np arrays
+    feature_vectors = [np.array(list(dictionary.values())) for dictionary in dictionary_list]  #Convert to array of np arrays to work with scikit
     
-    # Set the number of clusters
+    # Centroids
     n_clusters = 3
     
     # Initialize KMeans and fit it to the feature vectors
@@ -50,10 +50,10 @@ def cooccurrence_segmentation(image):
     kmeans = KMeans(n_clusters=n_clusters, random_state=42)
     kmeans.fit(feature_vectors)
     
-    # Assign each patch to a cluster
+    # labels of neighborhoods
     labels = kmeans.labels_
     
-    # Create color map (assign a unique color for each cluster)
+    # Segmentation colors: red, blue, green
     colors = [
         [255, 0, 0],   
         [0, 255, 0],   
@@ -61,16 +61,17 @@ def cooccurrence_segmentation(image):
     ]
     
     # Create an empty image with 3 channels (RGB)
+    # https://numpy.org/doc/stable/reference/generated/numpy.zeros.html
     clustered_image = np.zeros((height, width, 3), dtype=np.uint8)
     
-    # Apply colors to the patches based on the cluster label
+    # Apply colors to the neighborhoods based on the cluster label
     neighborhood_index = 0
-    for row in range(0, height, neighborhood_size):
+    for row in range(0, height, neighborhood_size): #Iterate through neighborhoods
         for column in range(0, width, neighborhood_size):
-            cluster_label = labels[neighborhood_index] #Get patches label
-            color = colors[cluster_label]  # Get the color for the cluster
-            clustered_image[row:row + neighborhood_size, column:column + neighborhood_size] = color  # For visualization
-            neighborhood_index += 1
+            cluster_label = labels[neighborhood_index] #Get neighborhood label
+            color = colors[cluster_label]  # color of label
+            clustered_image[row:row + neighborhood_size, column:column + neighborhood_size] = color  # color the neighborhood
+            neighborhood_index += 1 #next neighborhood
     
     return clustered_image
 
