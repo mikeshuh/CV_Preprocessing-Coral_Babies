@@ -32,7 +32,7 @@ def main():
 
         kirsch_image = kirsch_compass_operator(image)
 
-        cv.imwrite(f"Coral/CreativeOutput/kirsch{i}.JPG", kirsch_image)
+        cv.imwrite(f"Coral/CreativeOutput/Kirsch{i}.JPG", kirsch_image)
 
     for i in range (1, 3):
         image = cv.imread(f"Geology/GaussianOutput/gaussian{i}.JPG", cv.IMREAD_GRAYSCALE)
